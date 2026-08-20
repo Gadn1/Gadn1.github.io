@@ -1,329 +1,708 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BLACK MARKET TERMINAL</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+    <title>BLACK MARKET TERMINAL</title>
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #050505;
-      color: #fff;
-      font-family: Arial, Helvetica, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    .terminal {
-      width: min(900px, 90vw);
-      text-align: center;
-    }
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            min-height: 100%;
+        }
 
-    h1 {
-      margin-bottom: 55px;
-      font-size: clamp(20px, 3vw, 34px);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: #ff3030;
-      text-shadow: 0 0 15px #ff0000;
-    }
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at center, #160000 0%, #070000 35%, #000 75%);
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
 
-    /* ЗАГРУЗКА */
+        .terminal {
+            width: min(900px, 90vw);
+            text-align: center;
+        }
 
-    #loader {
-      display: block;
-    }
+        /* =========================
+           ЗАГОЛОВОК
+        ========================= */
 
-    .loading-area {
-      width: 100%;
-      position: relative;
-    }
+        h1 {
+            margin: 0 0 70px;
 
-    .track {
-      height: 8px;
-      width: 100%;
-      background: #222;
-      border: 1px solid #444;
-      position: relative;
-      box-shadow: 0 0 10px #111;
-    }
+            font-size: clamp(20px, 3vw, 34px);
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
 
-    .progress {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #8b0000, #ff2222);
-      animation: loading 10s linear forwards;
-      box-shadow: 0 0 15px #ff0000;
-    }
+            color: #ff2222;
 
-    .rolling-clown {
-      position: absolute;
-      bottom: 8px;
-      left: 0;
-      width: 58px;
-      height: 58px;
-      transform: translateX(-50%);
-      animation: roll 10s linear forwards;
-    }
+            text-shadow:
+                0 0 5px #ff0000,
+                0 0 15px #ff0000,
+                0 0 30px rgba(255, 0, 0, 0.5);
+        }
 
-    .clown-head {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background: #eee;
-      border: 3px solid #222;
-      position: relative;
-      box-shadow: 0 0 12px #fff;
-    }
+        /* =========================
+           ЭКРАН ЗАГРУЗКИ
+        ========================= */
 
-    .clown-head::before,
-    .clown-head::after {
-      content: "";
-      position: absolute;
-      top: 17px;
-      width: 10px;
-      height: 13px;
-      background: #111;
-      border-radius: 50%;
-    }
+        #loader {
+            display: block;
+        }
 
-    .clown-head::before {
-      left: 13px;
-    }
+        .loading-area {
+            position: relative;
+            width: 100%;
+            height: 80px;
+        }
 
-    .clown-head::after {
-      right: 13px;
-    }
+        /* Полоска */
 
-    .hair {
-      position: absolute;
-      top: -10px;
-      left: 4px;
-      width: 50px;
-      height: 20px;
-      background: #d40000;
-      border-radius: 50%;
-    }
+        .track {
+            position: absolute;
 
-    .nose {
-      position: absolute;
-      z-index: 5;
-      width: 17px;
-      height: 17px;
-      background: #ff1717;
-      border-radius: 50%;
-      top: 26px;
-      left: 18px;
-      box-shadow: 0 0 12px #ff0000;
-    }
+            left: 0;
+            bottom: 10px;
 
-    .mouth {
-      position: absolute;
-      width: 27px;
-      height: 11px;
-      border-bottom: 3px solid #111;
-      border-radius: 50%;
-      bottom: 8px;
-      left: 13px;
-    }
+            width: 100%;
+            height: 8px;
 
-    @keyframes loading {
-      from { width: 0%; }
-      to { width: 100%; }
-    }
+            background: #1b1b1b;
 
-    @keyframes roll {
-      from {
-        left: 0%;
-        transform: translateX(-50%) rotate(0deg);
-      }
-      to {
-        left: 100%;
-        transform: translateX(-50%) rotate(1080deg);
-      }
-    }
+            border: 1px solid #333;
 
-    /* КЛОУН ПОСЛЕ ЗАГРУЗКИ */
+            box-shadow:
+                0 0 5px #000,
+                inset 0 0 5px #000;
+        }
 
-    #clown-screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
+        /* Заполнение полоски */
 
-    .big-clown {
-      position: relative;
-      width: 230px;
-      height: 230px;
-      border-radius: 50%;
-      background: #eee;
-      border: 8px solid #222;
-      box-shadow:
-        0 0 25px #ff0000,
-        inset 0 0 30px #aaa;
-      cursor: pointer;
-      transition: transform .2s, filter .2s;
-    }
+        .progress {
+            width: 0%;
+            height: 100%;
 
-    .big-clown:hover {
-      transform: scale(1.04);
-      filter: brightness(1.15);
-    }
+            background: linear-gradient(
+                90deg,
+                #700000,
+                #ff0000,
+                #ff3333
+            );
 
-    .big-clown .eye {
-      position: absolute;
-      top: 67px;
-      width: 27px;
-      height: 38px;
-      background: #111;
-      border-radius: 50%;
-    }
+            box-shadow:
+                0 0 8px #ff0000,
+                0 0 20px rgba(255, 0, 0, 0.7);
 
-    .big-clown .eye.left {
-      left: 48px;
-    }
+            animation: loading 10s linear forwards;
+        }
 
-    .big-clown .eye.right {
-      right: 48px;
-    }
+        /* =========================
+           КАТЯЩАЯСЯ ГОЛОВА
+        ========================= */
 
-    .big-nose {
-      position: absolute;
-      z-index: 3;
-      top: 100px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 58px;
-      height: 58px;
-      background: #e60000;
-      border-radius: 50%;
-      box-shadow:
-        0 0 20px #ff0000,
-        inset -8px -8px 10px #a00000;
-    }
+        .rolling-clown {
+            position: absolute;
 
-    .big-mouth {
-      position: absolute;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 105px;
-      height: 48px;
-      border-bottom: 7px solid #111;
-      border-radius: 50%;
-    }
+            left: 0;
+            bottom: 18px;
 
-    .hair-big {
-      position: absolute;
-      top: -40px;
-      left: 20px;
-      width: 190px;
-      height: 70px;
-      background: #d00000;
-      border-radius: 50%;
-      z-index: -1;
-      box-shadow: 0 0 20px #ff0000;
-    }
+            width: 58px;
+            height: 58px;
 
-    #success {
-      display: none;
-      margin-top: 35px;
-      font-size: 28px;
-      color: #ff2222;
-      text-shadow: 0 0 15px red;
-      animation: appear .4s ease-out;
-    }
+            transform: translateX(-50%);
 
-    @keyframes appear {
-      from {
-        opacity: 0;
-        transform: scale(.7);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
+            animation:
+                roll 10s linear forwards;
+        }
 
-    .hint {
-      margin-top: 20px;
-      color: #777;
-      font-size: 13px;
-      letter-spacing: 2px;
-    }
-  </style>
+        .clown-head {
+            position: relative;
+
+            width: 58px;
+            height: 58px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle at 35% 30%,
+                    #ffffff,
+                    #eeeeee 55%,
+                    #bdbdbd
+                );
+
+            border: 3px solid #222;
+
+            box-shadow:
+                0 0 10px #fff,
+                0 0 20px rgba(255, 0, 0, 0.4);
+        }
+
+        /* Волосы */
+
+        .hair {
+            position: absolute;
+
+            top: -11px;
+            left: 5px;
+
+            width: 45px;
+            height: 22px;
+
+            background: #d40000;
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 8px rgba(255, 0, 0, 0.7);
+        }
+
+        /* Глаза */
+
+        .clown-head::before,
+        .clown-head::after {
+            content: "";
+
+            position: absolute;
+
+            top: 17px;
+
+            width: 10px;
+            height: 13px;
+
+            background: #111;
+
+            border-radius: 50%;
+        }
+
+        .clown-head::before {
+            left: 13px;
+        }
+
+        .clown-head::after {
+            right: 13px;
+        }
+
+        /* Красный нос */
+
+        .nose {
+            position: absolute;
+            z-index: 5;
+
+            top: 25px;
+            left: 18px;
+
+            width: 18px;
+            height: 18px;
+
+            background: #ff1111;
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 8px #ff0000,
+                0 0 15px rgba(255, 0, 0, 0.8);
+        }
+
+        /* Рот */
+
+        .mouth {
+            position: absolute;
+
+            left: 13px;
+            bottom: 8px;
+
+            width: 27px;
+            height: 10px;
+
+            border-bottom: 3px solid #111;
+
+            border-radius: 50%;
+        }
+
+        /* =========================
+           АНИМАЦИЯ ЗАГРУЗКИ
+        ========================= */
+
+        @keyframes loading {
+            from {
+                width: 0%;
+            }
+
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes roll {
+            from {
+                left: 0%;
+                transform:
+                    translateX(-50%)
+                    rotate(0deg);
+            }
+
+            to {
+                left: 100%;
+                transform:
+                    translateX(-50%)
+                    rotate(1080deg);
+            }
+        }
+
+        /* =========================
+           ГЛАВНЫЙ КЛОУН
+        ========================= */
+
+        #clown-screen {
+            display: none;
+
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .big-clown {
+            position: relative;
+
+            width: 230px;
+            height: 230px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle at 35% 25%,
+                    #ffffff,
+                    #eeeeee 55%,
+                    #aaa
+                );
+
+            border: 8px solid #202020;
+
+            box-shadow:
+                0 0 20px rgba(255, 0, 0, 0.5),
+                0 0 50px rgba(255, 0, 0, 0.25),
+                inset 0 0 30px #aaa;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                filter 0.2s ease;
+        }
+
+        .big-clown:hover {
+            transform: scale(1.05);
+
+            filter: brightness(1.15);
+
+            box-shadow:
+                0 0 25px #ff0000,
+                0 0 60px rgba(255, 0, 0, 0.35),
+                inset 0 0 30px #aaa;
+        }
+
+        /* Большие глаза */
+
+        .big-clown .eye {
+            position: absolute;
+
+            top: 67px;
+
+            width: 27px;
+            height: 38px;
+
+            background: #111;
+
+            border-radius: 50%;
+
+            box-shadow:
+                inset 4px 4px 5px rgba(255,255,255,0.1);
+        }
+
+        .big-clown .eye.left {
+            left: 48px;
+        }
+
+        .big-clown .eye.right {
+            right: 48px;
+        }
+
+        /* Большой красный нос */
+
+        .big-nose {
+            position: absolute;
+            z-index: 3;
+
+            top: 100px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            width: 58px;
+            height: 58px;
+
+            background:
+                radial-gradient(
+                    circle at 30% 25%,
+                    #ff5555,
+                    #e60000 50%,
+                    #8f0000
+                );
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 15px #ff0000,
+                0 0 35px rgba(255, 0, 0, 0.7),
+                inset -8px -8px 10px rgba(100,0,0,0.5);
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        /* Реакция на наведение именно на нос */
+
+        .big-nose:hover {
+            transform:
+                translateX(-50%)
+                scale(1.12);
+
+            box-shadow:
+                0 0 20px #ff0000,
+                0 0 50px #ff0000;
+        }
+
+        /* Рот */
+
+        .big-mouth {
+            position: absolute;
+
+            left: 50%;
+            bottom: 40px;
+
+            transform: translateX(-50%);
+
+            width: 105px;
+            height: 48px;
+
+            border-bottom: 7px solid #111;
+
+            border-radius: 50%;
+        }
+
+        /* Волосы большого клоуна */
+
+        .hair-big {
+            position: absolute;
+            z-index: -1;
+
+            top: -40px;
+            left: 20px;
+
+            width: 190px;
+            height: 70px;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    #ff2222,
+                    #b00000
+                );
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 20px rgba(255, 0, 0, 0.7);
+        }
+
+        /* =========================
+           ПОДСКАЗКА
+        ========================= */
+
+        .hint {
+            margin-top: 25px;
+
+            color: #666;
+
+            font-size: 13px;
+
+            letter-spacing: 3px;
+
+            transition:
+                color 0.2s ease;
+        }
+
+        .big-clown:hover + .hint {
+            color: #aaa;
+        }
+
+        /* =========================
+           ЗАКАЗ ПРИНЯТ
+        ========================= */
+
+        #success {
+            display: none;
+
+            margin-top: 30px;
+
+            font-size: 30px;
+            font-weight: bold;
+
+            color: #ff2222;
+
+            letter-spacing: 2px;
+
+            text-shadow:
+                0 0 5px #ff0000,
+                0 0 15px #ff0000,
+                0 0 30px rgba(255, 0, 0, 0.6);
+
+            animation:
+                appear 0.4s ease-out;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: scale(0.6);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* =========================
+           МОБИЛЬНАЯ ВЕРСИЯ
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            h1 {
+                margin-bottom: 55px;
+
+                font-size: 18px;
+
+                letter-spacing: 2px;
+            }
+
+            .terminal {
+                width: 88vw;
+            }
+
+            .big-clown {
+                width: 190px;
+                height: 190px;
+            }
+
+            .big-clown .eye {
+                top: 55px;
+
+                width: 23px;
+                height: 32px;
+            }
+
+            .big-clown .eye.left {
+                left: 38px;
+            }
+
+            .big-clown .eye.right {
+                right: 38px;
+            }
+
+            .big-nose {
+                top: 83px;
+
+                width: 50px;
+                height: 50px;
+            }
+
+            .big-mouth {
+                bottom: 32px;
+
+                width: 85px;
+            }
+
+            .hair-big {
+                width: 160px;
+                height: 60px;
+
+                left: 15px;
+            }
+
+            #success {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-  <main class="terminal">
+    <main class="terminal">
 
-    <h1>Добро пожаловать к BLACK MARKET TERMINAL</h1>
+        <h1>
+            Добро пожаловать к BLACK MARKET TERMINAL
+        </h1>
 
-    <!-- Загрузка -->
-    <section id="loader">
-      <div class="loading-area">
 
-        <div class="rolling-clown">
-          <div class="clown-head">
-            <div class="hair"></div>
-            <div class="nose"></div>
-            <div class="mouth"></div>
-          </div>
-        </div>
+        <!-- =====================================
+             ЭКРАН ЗАГРУЗКИ
+        ====================================== -->
 
-        <div class="track">
-          <div class="progress"></div>
-        </div>
+        <section id="loader">
 
-      </div>
-    </section>
+            <div class="loading-area">
 
-    <!-- Экран после загрузки -->
-    <section id="clown-screen">
+                <!-- Катящаяся голова -->
 
-      <div class="big-clown" id="clown">
+                <div class="rolling-clown">
 
-        <div class="hair-big"></div>
+                    <div class="clown-head">
 
-        <div class="eye left"></div>
-        <div class="eye right"></div>
+                        <div class="hair"></div>
 
-        <div class="big-nose"></div>
+                        <div class="nose"></div>
 
-        <div class="big-mouth"></div>
+                        <div class="mouth"></div>
 
-      </div>
+                    </div>
 
-      <div class="hint">НАЖМИ НА КРАСНЫЙ НОС</div>
+                </div>
 
-      <div id="success">Заказ принят</div>
 
-    </section>
+                <!-- Полоса загрузки -->
 
-  </main>
+                <div class="track">
 
-  <script>
-    // Через 10 секунд показываем главного клоуна
-    setTimeout(() => {
-      document.getElementById("loader").style.display = "none";
-      document.getElementById("clown-screen").style.display = "flex";
-    }, 10000);
+                    <div class="progress"></div>
 
-    // Клик по клоуну / красному носу
-    document.getElementById("clown").addEventListener("click", () => {
-      document.getElementById("success").style.display = "block";
-    });
-  </script>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             ЭКРАН ПОСЛЕ ЗАГРУЗКИ
+        ====================================== -->
+
+        <section id="clown-screen">
+
+            <div
+                class="big-clown"
+                id="clown"
+                title="Нажмите на красный нос"
+            >
+
+                <div class="hair-big"></div>
+
+                <div class="eye left"></div>
+
+                <div class="eye right"></div>
+
+                <div class="big-nose"></div>
+
+                <div class="big-mouth"></div>
+
+            </div>
+
+
+            <div class="hint">
+                НАЖМИ НА КРАСНЫЙ НОС
+            </div>
+
+
+            <div id="success">
+                Заказ принят
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script>
+
+        /*
+         * =====================================
+         * GITHUB PAGES
+         * =====================================
+         *
+         * Этот JavaScript полностью работает
+         * на стороне пользователя.
+         *
+         * Никакого сервера или backend не требуется.
+         */
+
+
+        // Время загрузки: 10 секунд
+
+        const LOADING_TIME = 10000;
+
+
+        // Получаем элементы страницы
+
+        const loader =
+            document.getElementById("loader");
+
+        const clownScreen =
+            document.getElementById("clown-screen");
+
+        const clown =
+            document.getElementById("clown");
+
+        const success =
+            document.getElementById("success");
+
+
+        /*
+         * После 10 секунд убираем загрузку
+         * и показываем клоуна.
+         */
+
+        setTimeout(() => {
+
+            loader.style.display = "none";
+
+            clownScreen.style.display = "flex";
+
+        }, LOADING_TIME);
+
+
+        /*
+         * Нажатие на клоуна.
+         *
+         * Красный нос находится внутри элемента
+         * #clown, поэтому клик по носу также
+         * вызывает это событие.
+         */
+
+        clown.addEventListener("click", () => {
+
+            success.style.display = "block";
+
+        });
+
+    </script>
 
 </body>
 </html>
